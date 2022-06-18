@@ -4,7 +4,7 @@ const Footer: NextPage = () => {
   return (
     <footer>
       <p>
-        Made with React(useContext) and Typescript, by{' '}
+        Made with Next, Redux and Typescript, by{' '}
         <a
           target='_blank'
           rel='noreferrer'
