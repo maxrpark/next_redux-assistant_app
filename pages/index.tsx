@@ -1,37 +1,46 @@
-import { useEffect } from 'react';
-import type { NextPage } from 'next';
-import { Project } from '../ts/interfaces';
-import { ProjectCard } from '../components';
-import { useSelector, useDispatch } from 'react-redux';
-import { getProjects } from '../store/features/projects/projectSlice';
-import { AppDispatch, RootState } from '../store/store';
+import type { NextPage } from "next";
+import { Project } from "../ts/interfaces";
+import { ProjectCard } from "../components";
+import { GetServerSideProps } from "next";
 
-const Home: NextPage = () => {
-  const { projects } = useSelector((state: RootState) => state.projects);
-  const dispatch = useDispatch<AppDispatch>();
+interface Props {
+    projects: Project[];
+}
 
-  useEffect(() => {
-    dispatch(getProjects());
-  }, []);
-
-  if (projects.length === 0) {
+const Home: NextPage<Props> = ({ projects }) => {
+    if (projects.length === 0) {
+        return (
+            <section className='section'>
+                <h2 className='title'>Loading...</h2>;
+            </section>
+        );
+    }
     return (
-      <section className='section'>
-        <h2 className='title'>Loading...</h2>;
-      </section>
+        <section className='section'>
+            <h2 className='title'>Assistant</h2>
+            <h3 className='title'>
+                Same App with different frameworks or languages
+            </h3>
+            <div className='container'>
+                {projects.map((project: Project) => {
+                    return <ProjectCard project={project} key={project.id} />;
+                })}
+            </div>
+        </section>
     );
-  }
-  return (
-    <section className='section'>
-      <h2 className='title'>Assistant</h2>
-      <h3 className='title'>Same App with different frameworks or languages</h3>
-      <div className='container'>
-        {projects.map((project: Project) => {
-          return <ProjectCard project={project} key={project.id} />;
-        })}
-      </div>
-    </section>
-  );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const url = "https://assitant-app.netlify.app/api/projects-api";
+
+    const response = await fetch(url);
+    const projects = await response.json();
+
+    return {
+        props: {
+            projects,
+        },
+    };
 };
 
 export default Home;
